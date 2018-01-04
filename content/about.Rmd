@@ -9,6 +9,3 @@ I'll use it to save some data analysis and code snippets, mostly done using R.
 
 I currently work as a data scientist for Desjardins Groupes d'Assurances Générales, a property insurance company located in Lévis, Canada.
 
-```{r cool-plot, fig.width='80%', fig.cap='A cool plot.'}
-plot(cars, pch = 20)  # not really cool
-```
