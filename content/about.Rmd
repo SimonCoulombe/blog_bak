@@ -5,7 +5,9 @@ date: "2018-01-03T21:48:51-07:00"
 
 Hi! Welcome to my website.  
 
-I'll use it to save some data analysis and code snippets, mostly done using R.
+I'll use it to save some code snippets and data analysis done using R on open data.
 
 I currently work as a data scientist for Desjardins Groupes d'Assurances Générales, a property insurance company located in Lévis, Canada.
-
+```{r, echo = FALSE}
+plot(cars, pch = 20)  # not really cool
+```
