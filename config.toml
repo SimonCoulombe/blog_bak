@@ -5,6 +5,7 @@ theme = "hugo-lithium-theme"
 googleAnalytics = ""
 disqusShortname = ""
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+rssLimit = 30
 
 enableEmoji = "true"
 [permalinks]
@@ -23,6 +24,8 @@ enableEmoji = "true"
     name = "Linked In"
     url = "https://www.linkedin.com/in/simon-coulombe-310547112/"
 
+[author]
+name="Simon Coulombe"
 
 [params]
     description = "description.."
