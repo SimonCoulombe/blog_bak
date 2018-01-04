@@ -1,12 +1,11 @@
-baseURL = "https://simoncoulombe.netlify.com/"
+baseurl = "/"
 languageCode = "en-us"
-title = "Simon's snippets"
+title = "A Hugo website"
 theme = "hugo-lithium-theme"
 googleAnalytics = ""
 disqusShortname = ""
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
-enableEmoji = "true"
 [permalinks]
     post = "/:year/:month/:day/:slug/"
 
@@ -15,17 +14,13 @@ enableEmoji = "true"
     url = "/about/"
 [[menu.main]]
     name = "GitHub"
-    url = "https://github.com/simoncoulombe"
+    url = "https://github.com/rstudio/blogdown"
 [[menu.main]]
     name = "Twitter"
-    url = "https://twitter.com/coulsim"
-[[menu.main]]
-    name = "Linked In"
-    url = "https://www.linkedin.com/in/simon-coulombe-310547112/"
-
+    url = "https://twitter.com/rstudio"
 
 [params]
-    description = "description.."
+    description = "A website built through Hugo and blogdown."
 
     # options for highlight.js (version, additional languages, and theme)
     highlightjsVersion = "9.11.0"
