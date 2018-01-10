@@ -14,19 +14,30 @@ knitr::opts_chunk$set(collapse = TRUE,
                       message = FALSE)
 ```
 
-Today, David Robinson (@drob) tweeted about his unvotes package which contains the history of the United Nations General Assembly voting :
+Today, David Robinson (@drob) tweeted about his unvotes package which contains the history of the United Nations General Assembly voting :  
+```{r echo=FALSE}
+blogdown::shortcode('tweet', '950741750112555010')
+```
 
+To me, this dataset just screams to be mapped.  Especially on a hex map, as I have been
+looking for an excuse to try Joseph Bailey's (@iammrbailey)  hexmapr package
+since I saw this tweet two  months ago:  
+```{r echo=FALSE}
+blogdown::shortcode('tweet', '925346870381240320')
+```
 
-This dataset just screams to be mapped on a hex map, and I have been looking for an excuse to try Joseph Bailey's (@iammrbailey)  hexmapr for the past two months.
-{{< tweet 925346870381240320 >}}
+Hex map arrange the polygons of the countries on a grid of hexagons, where each 
+country has the same size, which is great since each vote has the same value and
+huge countries such as Canada or Russia see their visual importance exagerated.  
 
-Hex map arrange the countries on a grid of hexagons, where each country has the same size, which is gread since each vote has the same value.  
+In this post, we will first map the results from the most recent important UN 
+vote on a leaflet using Andy South (@southmapr)'s rworldmap package as a source 
+for the world map shapefile.  
 
-In this post, we will first map the results from the most recent important UN vote on a leaflet using Andy South (@southmapr)'s rworldmap package as a source for the shapefile.
+Then we will attempt to convert the world map to a hex map using the hexmapr 
+package and map the result using ggplot.  
 
-Then we will attempt to convert the world map to a hex map using the hexmapr package and map the result using ggplot.
-
-## Get the votes and map them on the world map
+## Get the votes and map them on the world map  
 
 ```{r put_votes_on_map}
 #devtools::install_github("sassalley/hexmapr")
@@ -77,10 +88,10 @@ leaflet(sf) %>%
             title = ~ paste0("votes on ", lastvote_desc))
 ```
 
-## Convert the world map to a hex grid and map the votes
+## Convert the world map to a hex grid and map the votes  
 
 Here, we follow the hexmapr vignette, except that we use the 
-`as(sf, 'Spatial')` function instead of `read_polygons()` since I dont have 
+`as(sf, 'Spatial')` function instead of `read_polygons()` since we dont have 
 an actual shapefile to read. The documentation of `read_polygons()` states that it 
 is "basically st_read", and it seems to work.
 
