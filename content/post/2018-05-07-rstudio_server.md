@@ -10,12 +10,12 @@ I have recently had to deploy a public-facing shiny dashboard.    I decided this
     * Guaranteed to be always on  
     * Always free ( I chose a f1-micro  instance)
 
-[This guide](https://github.com/paeselhz/RStudio-Shiny-Server-on-GCP)  by Luis Henrique Zanandrea Paese on GitHub covered all the bases I needed to covered to start my first RStudio / Shiny server.  I will use to complement Luis's guide with the following information that was required for my use case:  
+[This guide](https://github.com/paeselhz/RStudio-Shiny-Server-on-GCP)  by Luis Henrique Zanandrea Paese on GitHub covered all the bases I needed to covered to start my first RStudio / Shiny server.  In this post, I will complement Luis's guide with the following information that was required for my use case:  
 
     * Create a swap file because the f1-micro doesnt have enough ram to compile `rcpp`
-    * Install dependencies for the "sf" package  
-    * Static virtual machine external IP address  
-    * [Link my domain name to the VM  using "A Record"](https://docs.microsoft.com/en-us/azure/cloud-services/cloud-services-custom-domain-name-portal)  
+    * Install dependencies for the "sf" package (GDAL was a pain)  
+    * Get a static IP address   for my virtual machine
+    * Link my domain name to the static IP address  using "A Record"
     * Password-protect the shiny server using nginx   
 
 ## Setting up the GCP VM instance
@@ -44,7 +44,7 @@ sudo apt-get update
 sudo apt-get upgrade
 
 sudo sh -c 'echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial/" >> /etc/apt/sources.list'
-sudo -E apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
 sudo apt-get -y update && sudo apt-get -y upgrade
 ```
 
