@@ -10,19 +10,33 @@ I have recently had to deploy a public-facing shiny dashboard.    I decided this
     * Guaranteed to be always on  
     * Always free ( I chose a f1-micro  instance)
 
-[This guide](https://github.com/paeselhz/RStudio-Shiny-Server-on-GCP)  by Luis Henrique Zanandréa Paese on GitHub covered all the bases I needed to covered to start my first RStudio / Shiny server.  I will use to complement Luis's guide with the following information that was required for my use case:  
+[This guide](https://github.com/paeselhz/RStudio-Shiny-Server-on-GCP)  by Luis Henrique Zanandrea Paese on GitHub covered all the bases I needed to covered to start my first RStudio / Shiny server.  I will use to complement Luis's guide with the following information that was required for my use case:  
 
+    * Create a swap file because the f1-micro doesnt have enough ram to compile `rcpp`
     * Install dependencies for the "sf" package  
     * Static virtual machine external IP address  
     * [Link my domain name to the VM  using "A Record"](https://docs.microsoft.com/en-us/azure/cloud-services/cloud-services-custom-domain-name-portal)  
     * Password-protect the shiny server using nginx   
 
 ## Setting up the GCP VM instance
-Follow Luis's instruction to create the VM instance.  I used a f1-micro because it is free.  
+Here we follow Luis's instruction to create the VM instance.  I used a f1-micro instance (0.2 CPU, 512 MB RAM)  because it is free.  
+
+## Create a swap file
+I create a 3GB swap file because we don't have enough RAM to compile `rcpp` using the f1-micro instance.  [Just follow this guide](https://digitizor.com/create-swap-file-ubuntu-linux/): 
+```
+cd /
+sudo dd if=/dev/zero of=swapfile bs=1M count=3000
+sudo mkswap swapfile
+sudo swapon swapfile
+sudo nano etc/fstab
+/swapfile none swap sw 0 0
+cat /proc/meminfo
+```
+
 
 ## Installing R, RStudio Server and Shiny Server on your virtual machine
 
-The only differences we have with Luis's instruction are a few lines under "install spatial libraries" to make sure that a recent version of GDAL would be installed, allowing me to install the `sf` package. 
+Here we follow Luis's guide, with the only differences being a a few lines under "install spatial libraries" to make sure that a recent version of GDAL will be installed, allowing me to install the `sf` package.   
 
 Make sure that your machine is up-to-date by running these commands:  
 ```
