@@ -1,17 +1,16 @@
 ---
-title: "Deploying a secure Shiny Server and RStudio Server on Google Cloud Platform"
+title: "Deploying a secure Shiny Server and RStudio Server on a free Google Cloud virtual machine"
+slug: "protected_free_shiny"
 date: "2018-05-07"
 ---
  
 
-I have recently had to deploy a public-facing shiny dashboard.    I decided this would be the perfect time to create my first google cloud machine.  The main reasons I decided to do it on the cloud are as follow:   
-  
+I have recently had to deploy a public-facing shiny dashboard.    I decided this would be the perfect time to create my first google cloud machine.  The main reasons I decided to do it on the cloud are as follow:     
     * No need to open port on my home computer  
     * Guaranteed to be always on  
-    * Always free ( I chose a f1-micro  instance)
+    * Free ( I chose a f1-micro  instance)
 
 [This guide](https://github.com/paeselhz/RStudio-Shiny-Server-on-GCP)  by Luis Henrique Zanandrea Paese on GitHub covered all the bases I needed to covered to start my first RStudio / Shiny server.  In this post, I will complement Luis's guide with the following information that was required for my use case:  
-
     * Create a swap file because the f1-micro doesnt have enough ram to compile `rcpp`
     * Install dependencies for the "sf" package (GDAL was a pain)  
     * Get a static IP address   for my virtual machine
