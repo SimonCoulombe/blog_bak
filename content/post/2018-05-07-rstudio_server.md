@@ -6,25 +6,25 @@ date: "2018-05-07"
 
 I have recently had to deploy a public-facing shiny dashboard.    I decided this would be the perfect time to create my first google cloud machine.  The main reasons I decided to do it on the cloud are as follow:   
   
-  - No need to open port on my home computer  
-  - Guaranteed to be always on  
-  - Always free ( I chose a f1-micro  instance)
+    * No need to open port on my home computer  
+    * Guaranteed to be always on  
+    * Always free ( I chose a f1-micro  instance)
 
-This guide (https://github.com/paeselhz/RStudio-Shiny-Server-on-GCP)  by Luis Henrique Zanandréa Paese on GitHub covered all the bases I needed to covered to start my first RStudio / Shiny server.  I had to dig up some extra information, which I will use to complement Luis's guide:  
-  - Install dependencies for the "sf" package
-  - Static virtual machine extarnal IP address
-  - [Link my domain name to the VM  using "A Record"](https://docs.microsoft.com/en-us/azure/cloud-services/cloud-services-custom-domain-name-portal)
-  - Password-protect the shiny server using nginx 
+[This guide](https://github.com/paeselhz/RStudio-Shiny-Server-on-GCP)  by Luis Henrique Zanandréa Paese on GitHub covered all the bases I needed to covered to start my first RStudio / Shiny server.  I will use to complement Luis's guide with the following information that was required for my use case:  
 
+    * Install dependencies for the "sf" package  
+    * Static virtual machine external IP address  
+    * [Link my domain name to the VM  using "A Record"](https://docs.microsoft.com/en-us/azure/cloud-services/cloud-services-custom-domain-name-portal)  
+    * Password-protect the shiny server using nginx   
 
-== Setting up the GCP VM instance
+## Setting up the GCP VM instance
 Follow Luis's instruction to create the VM instance.  I used a f1-micro because it is free.  
 
-== Installing R, RStudio Server and Shiny Server on your virtual machine
+## Installing R, RStudio Server and Shiny Server on your virtual machine
 
 The only differences we have with Luis's instruction are a few lines under "install spatial libraries" to make sure that a recent version of GDAL would be installed, allowing me to install the `sf` package. 
 
-Make sure that your machine is up-to-date by running these commands (same as Luis's)
+Make sure that your machine is up-to-date by running these commands:  
 ```
 sudo apt-get update
 sudo apt-get upgrade
@@ -34,7 +34,7 @@ sudo -E apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
 sudo apt-get -y update && sudo apt-get -y upgrade
 ```
 
-Install spatial libraries, including GDAL > 2.2.0   (some black magic here)
+Install spatial libraries, including GDAL > 2.2.0   (some black magic here, it definitely could be optimized but I don't know how)
 ```
 sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
 sudo apt-cache policy libgdal-dev
@@ -75,7 +75,6 @@ We also create a username which will be used to log into RStudio
 ```
 sudo adduser YOUR_USER_NAME
 ```
-accessible at http://your_external_ip:3838
 
 Install Shiny server : 
 ```
@@ -92,18 +91,18 @@ sudo chmod 777 -R /srv/shiny-server/
 At this point, we have a running RStudio server accessible at http://your_external_ip:3838 and  a Shiny server accessible at http://your_external_ip:8787.   
 We will want that IP to be static and linked to a domain name and we will both servers to be password protected.  
 
-== Static external IP
+## Static external IP
 
-Static external addresses are free as long as the machine they are linked to is powered on.  Since we are using a free VM, we will leave it always on.  Following the instructiosn from this [dataquest blog post](https://www.dataquest.io/blog/setting-up-a-free-data-science-environment-on-google-cloud/),    we go back to the  
+Our VM IP address can change every time we restart it.  This means we can't point any bookmark or domain names to our servers.  Thankfully, static external addresses are free as long as the machine they are linked to is powered on.  We will leave it always on since we are using the free machine anyway.    
+Following the instructiosn from this [dataquest blog post](https://www.dataquest.io/blog/setting-up-a-free-data-science-environment-on-google-cloud/),    we navigate to the google cloud console (https://console.cloud.google.com), then click on the three horizontal bars at the top-left of the page to show the "products and services" menu on the left.  Then we navigate to Networking > VPC network > External IP addresses.  Or jump to [this URL](https://console.cloud.google.com/networking/addresses).
 
-To change our instance's IP address to a static one, we navigate to the google cloud console (https://console.cloud.google.com), then click on the three horizontal bars at the top-left of the page to show the "products and services" menu on the left.  Then we navigate to Networking > VPC network > External IP addresses.  Or jump to [this URL](https://console.cloud.google.com/networking/addresses).
+## Pointing a domain name to our VM using "A Record"  
 
-== Pointing a domain name to our VM using "A Record"  
+This is not supposed to be hard, but this took me a while to figure out because I made the mistake to ask Netfirms's technical support to help me.   They wasted 90 minutes trying to set up a "CName" and "subdomain" linking to my VM.  After some googling, I learned that Iwhat I needed was an "A record" linking to my vm's external machine IP address.   I named the record "shiny" for the rest of this example.  
+  
+At this point, shiny.mydomain.com:8787 links to my rstudio server and shiny.mydomain.com:3838 links to my shiny server.   
 
-This is not supposed to be hard, but this took me a while to figure out because I asked Netfirms's technical support to help me.   They wasted 90 minutes trying to set up a "CName" and "subdomain" linking to my VM.  After some googling, I learned that I simply had to add a "A record" linking to my vm's external machine IP address.   I named the record "shiny".  
-At this point, shiny.simoncoulombe.com:8787 links to my rstudio server and shiny.simoncoulombe.com:3838 links to my shiny server.  
-
-== Securing the servers by hiding them behind nginx
+## Securing the Shiny server by hiding them behind nginx authentification
 
 This is all great, but one of my shiny dashboards need to be kept away from the public eye.    This is where nginx, a web server, comes in.  The code below is based on the [Add Authentication to Shiny Server with Nginx blog post by Kris Eberwein](https://www.r-bloggers.com/add-authentication-to-shiny-server-with-nginx/)  and the Rstudio pages about [running rstudio server with a proxy](https://support.rstudio.com/hc/en-us/articles/200552326-Running-RStudio-Server-with-a-Proxy) and  [running shiny server with a proxy](https://support.rstudio.com/hc/en-us/articles/213733868-Running-Shiny-Server-with-a-Proxy).
 
@@ -185,9 +184,9 @@ Start the nginx server:
 ```
 sudo service nginx start
 ```
-At this point, there is a password-protected version of our shiny server at shiny.simoncoulombe.com/shiny and a password-protected version of the rstudio server at shiny.simoncoulombe.com/rstudio.   
+At this point, there is a password-protected version of our shiny server at shiny.mydomain.com/shiny and a password-protected version of the rstudio server at shiny.mydomain.com/rstudio.   
 
-However, the non-password protected version is still available at shiny.simoncoulombe.com:3838 .  To disable it, we'll edit the shiny-server conf file:
+However, the non-password protected version is still available at shiny.mydomain.com:3838 .  To disable it, we'll edit the shiny-server conf file:
 ```
 sudo systemctl stop shiny-server
 sudo nano /etc/shiny-server/shiny-server.conf
