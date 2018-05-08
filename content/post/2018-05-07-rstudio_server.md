@@ -22,6 +22,8 @@ I have recently had to deploy a public-facing shiny dashboard.    I decided this
 ## Setting up the GCP VM instance
 Here we follow Luis's instruction to create the VM instance.  I used a f1-micro instance (0.2 CPU, 512 MB RAM)  because it is free.  
 
+EDIT: I have been recently made aware of the `[googleCOmputerEngineR](https://github.com/cloudyr/googleComputeEngineR/blob/master/README.md)` package, which can create a google cloud instance from your local R session.  Definitely worth a try.
+
 ## Create a swap file
 I create a 3GB swap file because we don't have enough RAM to compile `rcpp` using the f1-micro instance.  [Just follow this guide](https://digitizor.com/create-swap-file-ubuntu-linux/): 
 ```
