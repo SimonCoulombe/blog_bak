@@ -51,7 +51,7 @@ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
 sudo apt-get -y update && sudo apt-get -y upgrade
 ```
 
-Install spatial libraries, including GDAL > 2.2.0   (some black magic here, it definitely could be optimized but I don't know how)
+Install spatial libraries for sf and rmapshaper, including GDAL > 2.2.0   (some black magic here, it definitely could be optimized but I don't know how)
 ```
 sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
 sudo apt-cache policy libgdal-dev
@@ -60,7 +60,11 @@ sudo apt update
 sudo apt upgrade
 sudo apt install gdal-bin python-gdal python3-gdal
 sudo apt-get update 
-sudo apt-get install libgeos-dev libproj-dev libgdal-dev libudunits2-dev
+sudo apt-get install libgeos-dev libproj-dev libgdal-dev libudunits2-dev libv8
+sudo add-apt-repository -y ppa:opencpu/jq
+sudo apt-get update
+sudo apt-get install libjq-dev
+
 ```
 
 Install R
