@@ -26,7 +26,8 @@ tags: ["weathercan", "heat pump", "rstats"]
 # TODO : valider ceci : Chunk options must be written in one line; no line breaks are allowed inside chunk options;
 # https://yihui.name/knitr/options/
 
-knitr::opts_chunk$set(collapse = TRUE,
+knitr::opts_chunk$set(echo = FALSE,
+                      collapse = TRUE,
                       warning = FALSE,
                       error = FALSE,
                       message = FALSE,
@@ -62,7 +63,7 @@ It is complicated to compare the efficiency of different heat pumps because thei
 
 
 I am considering purchasing the [York YHE24B21S](https://www.master.ca/en/groups/central-heat-pump-yhe-lx-series-) central heat pump with a CF24BXA1 coil and  a ME12BN21 air handler.    
-![](/images/yhe_img.png)
+![](images/yhe_img.png)
 
 
 This setup has a [published HSPF of 8.50 in region 4](http://www.upgnet.com/PdfFileRedirect/5005747-YTG-A-0216.PDF#page=5), which is equivalent to a HSPF of 7.391 in region 5.  Dividing by 3,41, we obtain an average COP of 2.16, meaning that the heatpump should divide your heating bill by 2.16 in region 5. Region 5 has a [climate equivalent to the city of  Ottawa](https://www.nrcan.gc.ca/energy/publications/efficiency/heating-heat-pump/6831).  Quebec City is colder on average, which means the system should also be less efficient on average.  
@@ -95,7 +96,7 @@ The [technical sheet](http://www.upgnet.com/PdfFileRedirect/5005747-YTG-A-0216.P
 
 I will assume that the heat pump stops working at the lowest temperature on the technical sheet (-12.2C).  The quote I received says that it operates until -17C, but I haven't seen that value in any official documentation.
 
-![](/images/yhe.png)
+![](images/yhe.png)
 
 ```{r load_libraries}
 library(plotly)
@@ -337,11 +338,17 @@ ggplot_data %>%
 
 The table below summarise the findings.  
 
-First, a sanity check: the model predicts that I should spend about 1708$ per year on average on heating if I do not change anything.  This is 57% of my total electricity bill, which fits right inside the  rule of thumb we mentionned earlier.
+First, a sanity check: the model predicts that I am currently spending about 1708$ per year on average on heating if I do not change anything.  This is 57% of my total electricity bill, which fits right inside the  rule of thumb we mentionned earlier.
 
 My local adjusted COP  of 1.97 is slightly lower than the published COP of 2.16, which is expected since my region is colder than Ottawa.  The savings of 804$ represent 49% of my  predicted heating bill and 26.8% of my total electricity bill.  
 
-Ignoring compounding interests (it is 2AM after all), the payback period on the extra 4000 \$ I spend to get the heat pump would only be 5 years.  The remaining 5 years of life in the heat pump would be profit, or a cushion to protect against problems.  
+Ignoring compounding interests (it is 2AM after all), the payback period on the extra 4000 \$ I spend to get the heat pump over the air conditionning would only be 5 years.  The remaining 5 years of life in the heat pump would be profit, or a cushion to protect against problems.    
+
+If I only bought the heat pump for the heating efficiency gains (7 500\$), then the payback period would be almost 10 years, ignoring interests and maintenance.  This is the expected life of the unit, and this wouldnt be economically viable.
+
+Thus, it appears that getting the heat pump is a good idea if you were getting the air conditionning anyway, but is not a good idea if you were not.
+
+
 
 
 **Next step: buy the damn thing. It will be very interesting to model my energy consumption as a piecewise regression once I get my heat pump installed.**
@@ -390,7 +397,7 @@ summary <- bind_rows(summary_years, summary_total)
 
 
 DT::datatable(
-  data =  summary,
+  data =  summary %>% select(year, real_COP, savings_dollar, everything()),
   rownames = F,
   options = list(
     dom = 't', ordering = F, pageLength=100,
