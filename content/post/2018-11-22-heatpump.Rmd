@@ -63,7 +63,9 @@ It is complicated to compare the efficiency of different heat pumps because thei
 
 
 I am considering purchasing the [York YHE24B21S](https://www.master.ca/en/groups/central-heat-pump-yhe-lx-series-) central heat pump with a CF24BXA1 coil and  a ME12BN21 air handler.    
-![yhe_img](images/yhe_img.png)
+
+![yhe image](/post/2018-11-22-heatpump_files/yhe_img.png)
+
 
 
 This setup has a [published HSPF of 8.50 in region 4](http://www.upgnet.com/PdfFileRedirect/5005747-YTG-A-0216.PDF#page=5), which is equivalent to a HSPF of 7.391 in region 5.  Dividing by 3,41, we obtain an average COP of 2.16, meaning that the heatpump should divide your heating bill by 2.16 in region 5. Region 5 has a [climate equivalent to the city of  Ottawa](https://www.nrcan.gc.ca/energy/publications/efficiency/heating-heat-pump/6831).  Quebec City is colder on average, which means the system should also be less efficient on average.  
@@ -95,8 +97,7 @@ To figure out my savings, I will need to generate a custom HSPF based on my loca
 The [technical sheet](http://www.upgnet.com/PdfFileRedirect/5005747-YTG-A-0216.PDF#page=41) of the York heat pump gives us the efficiency and capacity of the heat pump for 6 temperatures.  I need to know these values for all possible temperature, so I create two functions, `get_COP` and `get_MBH` that linearly interpolate the values.  
 
 I will assume that the heat pump stops working at the lowest temperature on the technical sheet (-12.2C).  The quote I received says that it operates until -17C, but I haven't seen that value in any official documentation.
-
-![yhe specs](images/yhe.png)
+![tech specs](/post/2018-11-22-heatpump_files/yhe.png)
 
 ```{r load_libraries}
 library(plotly)
@@ -105,7 +106,6 @@ library(lubridate)
 #devtools::install_github("ropensci/weathercan") 
 library(weathercan)
 library(modelr)
-
 
 
 wrapper <- function(x, ...)
