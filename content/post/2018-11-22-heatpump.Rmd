@@ -255,7 +255,7 @@ eventually 100% converted into heat that my electric furnace won't need to gener
 
 The biggest use of hot water is in the morning (adult shower) and evening (children bath), but hopefully that won't break the model.  
 
-It appears that we can model the kWh as a linear function of temperature ( awesome!)
+Thermodynamics state that my heating use should increase as a linear function of temperature.  It appears to be true ( awesome!)
 ```{r graph_electricity_needs}
 # Import electricity consumption data 
 
@@ -274,7 +274,7 @@ start <- "2018-11-03"
 ggplot(hydro %>% filter(date>=  lubridate::ymd(start) ))+
   geom_point(aes(x= temperature, y= kWh))+
   geom_smooth(aes(x=temperature, y= kWh))+ 
-  labs(title = wrapper("Hourly electricty consumption appears linearly related to exterior temperature",50))
+  labs(title = wrapper("Hourly electricty consumption is really linearly related to exterior temperature",50))
 
 ```
 
@@ -297,7 +297,9 @@ mod_lm
 
 We can finally combine all the sources.  For each hour during the heating seasons between 2010 and 2017, we will figure out my house's energy needs.  We will then look at the heat pump's capacity and efficiency to figure out which system will be used (heat pump or backup).  Knowing which system is in use, we will estimate my house's energy needs for that hour.
 
-We will then be able to calculate the coefficient of performance the heat pump would have had for each year.
+We are then be able to calculate the coefficient of performance the heat pump would have had for each year.
+
+
 
 ```{r}
 predicted_kWh <- 
@@ -342,16 +344,15 @@ First, a sanity check: the model predicts that I am currently spending about 170
 
 My local adjusted COP  of 1.97 is slightly lower than the published COP of 2.16, which is expected since my region is colder than Ottawa.  The savings of 804$ represent 49% of my  predicted heating bill and 26.8% of my total electricity bill.  
 
+This is hopefully a realistic estimate.  One one side, I was optimist and assumed that 100% of my electricity bill is heating, which means that I assume that all my electricity consumption can be reduced by the heat pump.  This is obviously not true, since my fridge energy use won't be reduced by the heat pump.   One the other side, I was pessimist and assumed that my heat pump would stop working at -9C since it cant output enough energy to cover 100% of my electricity consumption.   This is false for two reasons. First, my fridge still accounts for some of that electricity consumption.  Second, I do have baseboard heaters scattered around the house, so the heat pump will probably be able to "output whatever it can do and let the baseboard do the rest".  This means that my  COP will probably remain above 1 until -12C (tech sheet) or maybe even -17C (quote) instead of only until -9C.
+
 Ignoring compounding interests (it is 2AM after all), the payback period on the extra 4000 \$ I spend to get the heat pump over the air conditionning would only be 5 years.  The remaining 5 years of life in the heat pump would be profit, or a cushion to protect against problems.    
 
 If I only bought the heat pump for the heating efficiency gains (7 500\$), then the payback period would be almost 10 years, ignoring interests and maintenance.  This is the expected life of the unit, and this wouldnt be economically viable.
 
 Thus, it appears that getting the heat pump is a good idea if you were getting the air conditionning anyway, but is not a good idea if you were not.
 
-
-
-
-**Next step: buy the damn thing. It will be very interesting to model my energy consumption as a piecewise regression once I get my heat pump installed.**
+**Next step: buy the damn thing. It will be very interesting to model my energy consumption as a piecewise regression once I get my heat pump installed.**  
 
 
 ```{r predict_energy_needs}
