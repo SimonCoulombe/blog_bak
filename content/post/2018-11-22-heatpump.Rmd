@@ -117,6 +117,7 @@ kW_to_MBH = 3.4121416331
 kWh_price <- 0.07
 my_coords <- c(46.73, -71.27)
 ```
+
 ```{r}
 
 heat_pump_specs <- tibble(
@@ -259,13 +260,33 @@ Thermodynamics state that my heating use should increase as a linear function of
 ```{r graph_electricity_needs}
 # Import electricity consumption data 
 
-# hydro <- read_csv2("0311972681_heure_2018-10-17_au_2018-11-20.csv", locale = locale(decimal_mark = ","))
-# colnames(hydro) <- c("contrat", "datetime", "kWh", "code_kWh", "temperature", "code_temperature")
+# hydro1 <- read_csv2("0311972681_heure_2018-06-01_au_2018-06-13.csv", locale = locale(decimal_mark = ","))
+# hydro2 <- read_csv2("0311972681_heure_2018-06-14_au_2018-08-14.csv", locale = locale(decimal_mark = ","))
+# hydro3 <- read_csv2("0311972681_heure_2018-08-15_au_2018-10-16.csv", locale = locale(decimal_mark = ","))
+# hydro4 <- read_csv2("0311972681_heure_2018-10-17_au_2018-12-14.csv", locale = locale(decimal_mark = ","))
+# hydro5 <- read_csv2("0311972681_heure_2018-12-15_au_2018-12-17.csv", locale = locale(decimal_mark = ","))
+# 
+# 
+# colnames(hydro1) <- c("contrat", "datetime", "kWh", "code_kWh", "temperature", "code_temperature")
+# colnames(hydro2) <- c("contrat", "datetime", "kWh", "code_kWh", "temperature", "code_temperature")
+# colnames(hydro3) <- c("contrat", "datetime", "kWh", "code_kWh", "temperature", "code_temperature")
+# colnames(hydro4) <- c("contrat", "datetime", "kWh", "code_kWh", "temperature", "code_temperature")
+# colnames(hydro5) <- c("contrat", "datetime", "kWh", "code_kWh", "temperature", "code_temperature")
+# 
+# hydro <- hydro1 %>%
+#   bind_rows(hydro2) %>%
+#   bind_rows(hydro3) %>% 
+#   bind_rows(hydro4) %>%
+#   bind_rows(hydro5)
+# 
 # hydro <- hydro %>% mutate(date = lubridate::date(datetime),
-#                  hour = lubridate::hour(datetime)) %>% select(-contrat)
+#                  hour = lubridate::hour(datetime)) %>% select(-contrat) %>%
+#   arrange(datetime)
 # write_csv(hydro, "hydro.csv")
+# 
 
-hydro <- read_csv("hydro.csv")
+
+hydro <- read_csv("hydro.csv") 
 
 # graph kWh consumption 
 
@@ -283,7 +304,9 @@ Let's model the electricty consumption (proxy for heating needs) :
 ```{r model_heating_needs}
 # Model kWh consumption as a function of external temperature 
 
-mod_lm <- lm(formula = kWh ~ temperature, data = hydro %>% filter(date>=  lubridate::ymd(start) ) )
+mod_lm <- lm(formula = kWh ~ temperature, data = hydro %>% filter(date>=  lubridate::ymd(start) ) %>%
+               filter(date<=  lubridate::ymd("2018-11-20") )
+               )
 mod_lm
 
 ```
@@ -411,6 +434,39 @@ DT::datatable(
   DT::formatCurrency(c("energy_cost_furnace_only", "energy_cost_with_heatpump", "savings_dollar"), digits = 0) %>%
 
   DT::formatPercentage(c("savings_pct"), 0)
+
+```
+
+# Following up
+We got the heat pump installed on December 3rd.  I now have 2 weeks of data with a heat pump.
+
+boy, was I off.
+
+On one side, I was way to optimistic in the "above -9C" part.  I really need to figure out which part of my energy consumption can't be compressed, because I save less than half what I expected for that temperature ratio.    
+
+On the other side, the heat pump is a trooper and really does deliver saving down to -17C instead of just -9C.
+
+I'll collect some more data, figure out my non compressible consumption (ie my electricity consumption during summer without AC) and try to improve my modelling and update the expected savings.  
+
+```{r}
+
+
+hydro %>% filter(date>=  lubridate::ymd(start) ) %>%
+  mutate(heatpump = ifelse( date >= lubridate:::ymd("2018-12-03"), "actual heatpump", "actual furnace only" )) %>%
+  group_by(temperature, heatpump) %>% 
+  summarise(kWh = mean(kWh), count = n()) %>%
+  bind_rows(
+    ggplot_data %>% 
+      rename( kWh = value,   heatpump= key) %>% 
+      filter(heatpump %in% c("kWh_required", "real_kWh")) %>%
+      mutate(count=5) %>%
+      mutate(heatpump =
+               ifelse(heatpump == "kWh_required" , "modeled furnace only", 
+                      "modeled heatpump")))  %>%
+  ggplot(aes(x=temperature, y=kWh, color= heatpump, size=count)) + geom_point()+
+  labs(title= "average electricity consumption, with and without heatpump, holding interior temperature constant at 21C",
+       subtitle= "turns out I was way too optimistic on the percentage that can be reduced above -9C, but too pessimistic below -9C"
+       )
 
 ```
 
