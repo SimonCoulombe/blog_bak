@@ -23,11 +23,13 @@ tags: ["bayesian", "optimization", "rstats", "mlrMBO", "poisson", "rBayesianOpti
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>In this document, I will show how to optimize the xgboost hyperparameters for a poisson regression in R using the <code>mlrMBO</code> package. We will model the number of auto insurance claims based on characteristics of the car and driver, while offsetting for exposure. The data comes from the <code>insuranceData</code> package.</p>
-<p>We will demonstrate the code for a random search, a bayesian optimization using the <code>mlrMBO</code>package and also show how to perform a bayesian optimization using the deprecated (?) <code>rBayesianOptimization</code> package.</p>
-<p>The <code>mlrMBO</code> package appears to be well maintained. It is normally used in combination with the <code>mlr</code> package, but I couldnt find a way to use <code>mlr</code> to model a poisson regression using xgboost.</p>
+<p>Ratemaking models in insurance routinely use Poisson regression to model the frequency of auto insurance claims. They often are GLMs, but some insurers are moving towards GBMs such as <code>xgboost</code>.</p>
+<p><code>xgboost</code>has multiple hyperparameters that can be tuned to obtain a better predictive power. In order of decreasing needs of computing power, one can do a grid search, a random search or a bayesian optimization search.</p>
+<p>In this document, I will show how to create optimize the xgboost hyperparameters for a poisson regression in R using the <code>mlrMBO</code> package. We will model the number of auto insurance claims based on characteristics of the car and driver, while offsetting for exposure. The data comes from the <code>insuranceData</code> package.</p>
+<p>We will demonstrate the code for a random search, a bayesian optimization using the <code>mlrMBO</code>package and a bayesian optimization using the deprecated (?) <code>rBayesianOptimization</code> package.</p>
+<p>For most model types, <code>mlrMBO</code> can be used in combination with the <code>mlr</code> package to find the best hyperparameters directly. As far as I know the <code>mlr</code> package doesnt <a href="https://github.com/mlr-org/mlr/issues/515">handle poisson regression</a>, so we will have to create our own function to maximise.</p>
+<p><strong>Keep your eyes peeled</strong>: Max Kuhn (<span class="citation">@topepos</span>) <a href="https://twitter.com/topepos/status/1075151561863692290">said that tidymodels might do this in the first half of 2019</a>.</p>
 <p>I also tried the <code>rBayesianOptimization</code> package after being inspired by this post from <a href="http://blog.revolutionanalytics.com/2016/06/bayesian-optimization-of-machine-learning-models.html">Max Kuhn</a> in 2016 the example from <code>rBayesianOptimization</code> ’s help. I do not recommend using this package because it <a href="https://github.com/yanyachen/rBayesianOptimization/issues/4">sometimes recycles hyperparameters</a> and hasnt been updated on github since 2016.</p>
-<p>In this document, we will use the , <code>xgboost</code>, <code>tidyverse</code>, <code>mlrMBO</code>, <code>insuranceData</code> and <code>rBayesianOptimization</code> packages.</p>
 <pre class="r"><code>library(xgboost)
 library(insuranceData) # example dataset https://cran.r-project.org/web/packages/insuranceData/insuranceData.pdf
 library(tidyverse) # for data wrangling
@@ -39,7 +41,7 @@ library(purrr) # to evaluate the loglikelihood of each parameter set in the rand
 </div>
 <div id="preparing-the-data" class="section level1">
 <h1>Preparing the data</h1>
-<p>First, we load the dataCar data from the <code>insuranceData</code> package. It contains 67856 one-year vehicle insurance policies taken out in 2004 or 2005.</p>
+<p>First, we load the dataCar data from the <code>insuranceData</code> package. It contains 67 856 one-year vehicle insurance policies taken out in 2004 or 2005.</p>
 <p>The dependent variable is <code>numclaims</code>, which represents the number of claims.</p>
 <p>The <code>exposure</code> variable represents the “number of year of exposure” and is used as the offset variable. Its value is bounded between 0 and 1.</p>
 <p>Finally, the independent variables are as follow:</p>
@@ -1383,4 +1385,5 @@ hardcoded %&gt;%
 </tr>
 </tbody>
 </table>
+<p>Keep your eyes open, Max Kuhn</p>
 </div>

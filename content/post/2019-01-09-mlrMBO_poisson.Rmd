@@ -38,15 +38,22 @@ knitr::opts_chunk$set(collapse = FALSE,
 
 # Introduction  
 
-In this document, I will show how to optimize the xgboost hyperparameters for a poisson regression in R using the `mlrMBO` package. We will model the number of auto insurance claims based on characteristics of the car and driver, while offsetting for exposure.   The data comes from the `insuranceData` package.
+Ratemaking models in insurance routinely use Poisson regression to model the frequency of auto insurance claims.  They often are GLMs, but some insurers are moving towards GBMs such as `xgboost`.
 
-We will demonstrate the code for a random search, a bayesian optimization using the `mlrMBO`package and also show how to perform a bayesian optimization using the deprecated (?)  `rBayesianOptimization` package.  
+`xgboost`has multiple hyperparameters that can be tuned to obtain a better predictive power.  In order of decreasing needs of computing power, one can do a grid search, a random search or a bayesian optimization search.  
 
-The `mlrMBO`  package appears to be well maintained.  It is normally used in combination with the `mlr` package, but I couldnt find a way to use `mlr` to model a poisson regression using xgboost.
+
+In this document, I will show how to create optimize the xgboost hyperparameters for a poisson regression in R using the `mlrMBO` package. We will model the number of auto insurance claims based on characteristics of the car and driver, while offsetting for exposure.   The data comes from the `insuranceData` package.  
+
+We will demonstrate the code for a random search, a bayesian optimization using the `mlrMBO`package and a bayesian optimization using the deprecated (?)  `rBayesianOptimization` package.  
+
+For most model types, `mlrMBO` can be used in combination with the `mlr` package to find the best hyperparameters directly.  As far as I know the `mlr` package doesnt [handle poisson regression](https://github.com/mlr-org/mlr/issues/515), so we will have to create our own function to maximise.
+
+**Keep your eyes peeled**: Max Kuhn (@topepos) [said that tidymodels might do this in the first half of 2019](https://twitter.com/topepos/status/1075151561863692290).
+
 
 I also tried the `rBayesianOptimization` package after being inspired by this post from  [Max Kuhn](http://blog.revolutionanalytics.com/2016/06/bayesian-optimization-of-machine-learning-models.html) in 2016 the example from `rBayesianOptimization` 's help.   I do not recommend using this package because it  [sometimes recycles hyperparameters](https://github.com/yanyachen/rBayesianOptimization/issues/4) and hasnt been updated on github since 2016.
 
-In this document, we will use the , `xgboost`, `tidyverse`, `mlrMBO`,  `insuranceData` and `rBayesianOptimization` packages.  
 
 
 ```{r librairies}
@@ -64,7 +71,7 @@ library(purrr) # to evaluate the loglikelihood of each parameter set in the rand
 
 # Preparing the data
 
-First, we load the dataCar data from the `insuranceData` package.  It contains 67856 one-year vehicle insurance policies taken out in 2004 or 2005.   
+First, we load the dataCar data from the `insuranceData` package.  It contains 67 856 one-year vehicle insurance policies taken out in 2004 or 2005.   
 
 The dependent variable is  `numclaims`, which represents the number of claims.    
 
@@ -566,6 +573,8 @@ The table below shows the loglikelihood and hyperparameters for the hardcoded `s
 
 Bayesian optimization using mlrMBO and rBayesianOptimization both yield the best results.  The gain in loglikelihood above the "hardcoded" `simon_param` or the random search isnt that great, however, so it may not be necessary to implement `mlrMBO` in a non-kaggle setting.
 
+
+
 ```{r}
 
 hardcoded <- random_grid_results[1,] %>%
@@ -599,7 +608,7 @@ hardcoded %>%
 
 ```
 
-
+Keep your eyes open, Max Kuhn
 
 
 
